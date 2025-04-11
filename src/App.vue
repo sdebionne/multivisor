@@ -1,33 +1,33 @@
 <template>
-  <v-app >
+  <v-app>
     <ToolBar></ToolBar>
-    <v-content>
+    <v-main>
       <v-container fluid grid-list-md>
         <AlertBar></AlertBar>
         <router-view></router-view>
       </v-container>
-    </v-content>
+    </v-main>
     <NotificationBar></NotificationBar>
     <LogSheet></LogSheet>
     <ProcessDetails></ProcessDetails>
   </v-app>
 </template>
 
-<script>
-import ToolBar from '@/components/ToolBar'
-import NotificationBar from '@/components/NotificationBar'
-import AlertBar from '@/components/AlertBar'
+<script setup>
+import { onMounted } from "vue";
 
-import LogSheet from '@/components/process/Log'
-import ProcessDetails from '@/components/process/Details'
+import ToolBar from "@/components/ToolBar";
+import NotificationBar from "@/components/NotificationBar";
+import AlertBar from "@/components/AlertBar";
 
-export default {
-  components: {
-    ToolBar,
-    LogSheet,
-    ProcessDetails,
-    NotificationBar,
-    AlertBar
-  }
-}
+import LogSheet from "@/components/process/Log";
+import ProcessDetails from "@/components/process/Details";
+
+import { useAppStore } from "@/stores/app";
+
+const store = useAppStore();
+
+onMounted(() => {
+  store.init();
+});
 </script>

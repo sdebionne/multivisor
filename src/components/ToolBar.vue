@@ -1,63 +1,74 @@
 <template>
-  <v-toolbar fixed dark app class="primary">
-    <v-menu offset-y nudge-bottom="15" v-show="isAuthenticated && useAuthentication">
-      <template slot="activator">
-        <v-btn icon slot="activator">
-          <v-icon >menu</v-icon>
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-tile @click="logout">
-          <v-list-tile-title>Logout</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-menu>
+  <v-app-bar :elevation="2" fixed>
+    <!-- <template v-slot:prepend>
+      <v-menu offset="15" v-show="isAuthenticated && useAuthentication">
+        <template slot="activator">
+          <v-btn icon slot="activator">
+            <v-icon >menu</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="logout">
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template> -->
 
-    <v-toolbar-title>
-      <router-link to="/" tag="span" style="cursor: pointer">{{ name }}</router-link>
-    </v-toolbar-title>
-    <v-spacer></v-spacer>
-    <v-text-field append-icon="search" clearable single-line hide-details
-                  placeholder="Filter..." v-model="search" class="no-padding"
-                  color="grey lighten-1" v-show="isAuthenticated || !useAuthentication">
+    <v-app-bar-nav-icon> </v-app-bar-nav-icon>
+
+    <v-app-bar-title style="cursor: pointer" @click="$router.push('/')">
+      {{ name }}
+    </v-app-bar-title>
+
+    <!-- <template v-slot:append> -->
+    <v-text-field
+      append-inner-icon="mdi-magnify"
+      clearable
+      single-line
+      hide-details
+      placeholder="Filter..."
+      v-model="search"
+      class="no-padding"
+      color="grey-lighten-1"
+      v-show="isAuthenticated || !useAuthentication"
+    >
     </v-text-field>
-    <ActionBar v-show="isAuthenticated || !useAuthentication"></ActionBar>
-    <v-toolbar-items v-show="isAuthenticated || !useAuthentication">
-      <ProcessChip class="hidden-sm-and-down"></ProcessChip>
-      <SupervisorChip class="hidden-sm-and-down"></SupervisorChip>
-      <GroupChip class="hidden-sm-and-down"></GroupChip>
-    </v-toolbar-items>
-  </v-toolbar>
+    <!-- <ActionBar v-show="isAuthenticated || !useAuthentication"></ActionBar> -->
+    <!-- <v-toolbar-items v-show="isAuthenticated || !useAuthentication"> -->
+    <v-btn icon="mdi-dots-vertical"></v-btn>
+    <ProcessChip class="hidden-sm-and-down"></ProcessChip>
+    <SupervisorChip class="hidden-sm-and-down"></SupervisorChip>
+    <GroupChip class="hidden-sm-and-down"></GroupChip>
+    <!-- </v-toolbar-items> -->
+    <!-- </template> -->
+  </v-app-bar>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import ProcessChip from './process/Chip'
-import SupervisorChip from './supervisor/Chip'
-import GroupChip from './group/Chip'
-import ActionBar from './ActionBar'
+<script setup>
+//import { computed } from 'vue'
+import { storeToRefs } from "pinia";
 
-export default {
-  name: 'ToolBar',
-  components: { ActionBar, ProcessChip, SupervisorChip, GroupChip },
-  computed: {
-    ...mapGetters(['name']),
-    isAuthenticated () { return this.$store.state.isAuthenticated },
-    useAuthentication () { return this.$store.state.useAuthentication },
-    search: {
-      get () { return this.$store.state.search },
-      set (v) { this.$store.commit('updateSearch', v) }
-    }
-  },
-  methods: {
-    logout () {
-      this.$store.dispatch('logout').then(() => { this.$router.push({'name': 'Login'}) })
-    }
-  }
+import ProcessChip from "./process/Chip.vue";
+import SupervisorChip from "./supervisor/Chip.vue";
+import GroupChip from "./group/Chip.vue";
+import ActionBar from "./ActionBar.vue";
+
+import { useAppStore } from "@/stores/app";
+
+const store = useAppStore();
+
+const { name, search, isAuthenticated, useAuthentication } = storeToRefs(store);
+
+function logout() {
+  dispatch("logout").then(() => {
+    this.$router.push({ name: "Login" });
+  });
 }
 </script>
+
 <style scoped>
-  .no-padding {
-    padding: 0;
-  }
+.no-padding {
+  padding: 0;
+}
 </style>
