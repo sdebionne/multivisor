@@ -55,14 +55,16 @@ multivisor-cli = "multivisor.client.cli:main [cli]"
 [project.optional-dependencies]
 rpc = [
     "zerorpc",
-    "supervisor",
+    "supervisor; platform_system=='Linux'",
+    "supervisor-win; platform_system=='Windows'",
 ]
 web = [
     "flask",
     "werkzeug",
     "blinker",
     "zerorpc",
-    "supervisor",
+    "supervisor; platform_system=='Linux'",
+    "supervisor-win; platform_system=='Windows'",
 ]
 cli = [
     "maya",
