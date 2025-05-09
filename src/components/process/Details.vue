@@ -51,12 +51,12 @@ const items = [
 const { processDetails } = storeToRefs(store);
 
 // const process = computed(() => {
-//   return processDetails.process;
+//   return processDetails.value.process;
 // });
 
 const visible = computed({
   get() {
-    return store.processDetails.visible;
+    return processDetails.value.visible;
   },
   set(newValue) {
     store.setProcessDetailsVisible(newValue);
@@ -64,11 +64,11 @@ const visible = computed({
 });
 
 const lastUpdate = computed(() => {
-  return timeAgo(processDetails.process.now);
+  return timeAgo(processDetails.value.process.now);
 });
 
 const showItem = (item) => {
-  return "value" in item || processDetails.process[item.id] !== "";
+  return "value" in item || processDetails.value.process[item.id] !== "";
 };
 
 const itemValue = (item) => {
@@ -76,7 +76,7 @@ const itemValue = (item) => {
   console.log(process);
   let res;
   if ("id" in item) {
-    res = processDetails.process[item.id];
+    res = processDetails.value.process[item.id];
   } else {
     res = item.value();
   }
