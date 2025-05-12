@@ -72,15 +72,12 @@ const showItem = (item) => {
 };
 
 const itemValue = (item) => {
-  console.log(item);
-  console.log(process);
   let res;
   if ("id" in item) {
     res = processDetails.value.process[item.id];
   } else {
     res = item.value();
   }
-  console.log(res);
   return res;
 };
 </script>

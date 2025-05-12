@@ -1,23 +1,24 @@
 <template>
-  <v-bottom-sheet v-model="log.visible">
+  <v-bottom-sheet v-model="visible">
     <v-toolbar
       dense
       height="32px"
       :color="log.stream === 'err' ? 'orange' : 'blue'"
+      :title="title"
     >
-      <h5>{{ title }}</h5>
-      <v-spacer></v-spacer>
-      <v-tooltip location="bottom">
+      <!-- <h5>{{ title }}</h5>
+      <v-spacer></v-spacer> -->
+      <!-- <v-tooltip location="bottom"> -->
         <v-switch
-          slot="activator"
           color="indigo"
           style="height: 32px"
           v-model="autoScroll"
         >
+        <!-- <v-tooltip>on / off</v-tooltip> -->
         </v-switch>
-        <span>auto-scroll ({{ autoScroll ? "On" : "Off" }})</span>
-      </v-tooltip>
-      <v-tooltip location="bottom">
+        <!-- <span>auto-scroll ({{ autoScroll ? "On" : "Off" }})</span>
+      </v-tooltip> -->
+      <!-- <v-tooltip location="bottom"> -->
         <v-chip slot="activator" color="indigo white--text">
           {{ localSizeStr }}
           <v-btn
@@ -30,17 +31,17 @@
             <v-icon>delete</v-icon>
           </v-btn>
         </v-chip>
-        <span>Web console log size</span>
-      </v-tooltip>
-      <v-tooltip location="bottom">
+        <!-- <span>Web console log size</span>
+      </v-tooltip> -->
+      <!-- <v-tooltip location="bottom"> -->
         <v-chip slot="activator" class="bg-indigo text-white">
           {{ sizeStr }}
         </v-chip>
-        <span>Remote log size</span>
-      </v-tooltip>
+        <!-- <span>Remote log size</span>
+      </v-tooltip> -->
       <v-btn icon size="small" @click="maximize = !maximize" class="mr-2">
-        <v-icon v-if="maximize">expand_more</v-icon>
-        <v-icon v-else>expand_less</v-icon>
+        <v-icon v-if="maximize">mdi-expand-more</v-icon>
+        <v-icon v-else>mdi-expand-less</v-icon>
       </v-btn>
     </v-toolbar>
     <v-progress-linear
@@ -75,24 +76,24 @@ import { useAppStore } from "@/stores/app";
 const store = useAppStore();
 
 const text = "";
-const size = 0;
+let size = 0;
 const maximize = false;
 const autoScroll = true;
 const eventSource = null;
 
 const { log } = storeToRefs(store);
 
-// const visible = computed({
-//   get() { return store.log.visible },
-//   set(newValue) { store.commit('setLogVisible', newValue) }
-// })
+const visible = computed({
+  get() { return log.value.visible },
+  set(newValue) { store.setLogVisible(newValue) }
+})
 
 const title = computed(() => {
-  if (!log.visible) {
+  if (!visible.value) {
     return "";
   }
-  return `${log.stream === "out" ? "O-log of " : "E-log of "}
-  ${log.process.name} on ${log.process.supervisor}`;
+  return `${log.value.stream === "out" ? "O-log of " : "E-log of "}
+  ${log.value.process.name} on ${log.value.process.supervisor}`;
 });
 
 const windowSize = computed(() => {
@@ -135,18 +136,18 @@ const viewLog = () => {
     size = 0;
     eventSource.close();
   }
-  if (!log.visible) {
+  if (!visible) {
     return;
   }
   let newEventSource = new EventSource(
-    `/api/process/log/${log.stream}/tail/${log.process.uid}`,
+    `/api/process/log/${log.value.stream}/tail/${log.value.process.uid}`,
   );
   newEventSource.onmessage = (event) => {
     let data = JSON.parse(event.data);
     appendLogMessage(data);
   };
   newEventSource.onopen = (event) => {
-    console.debug(log.stream + " stream opened for " + log.process.uid);
+    console.debug(log.value.stream + " stream opened for " + log.value.process.uid);
   };
   newEventSource.onclose = (event) => {
     eventSource = null;
@@ -158,7 +159,7 @@ const viewLog = () => {
   eventSource = newEventSource;
 };
 
-//TODO watch(log.visible, () => { viewLog() })
+watch(visible, () => { console.log("view log"); viewLog() })
 </script>
 
 <style scoped>
