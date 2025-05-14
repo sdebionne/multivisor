@@ -1,48 +1,50 @@
 <template>
   <v-bottom-sheet v-model="visible">
     <v-toolbar
-      dense
-      height="32px"
+      density="compact"
       :color="log.stream === 'err' ? 'orange' : 'blue'"
-      :title="title"
     >
-      <!-- <h5>{{ title }}</h5>
-      <v-spacer></v-spacer> -->
-      <!-- <v-tooltip location="bottom"> -->
-        <v-switch
-          color="indigo"
-          style="height: 32px"
-          v-model="autoScroll"
-        >
-        <!-- <v-tooltip>on / off</v-tooltip> -->
-        </v-switch>
+      <v-toolbar-title
+        :text="title"
+        class="log-toolbar-title"
+      ></v-toolbar-title>
+      <template v-slot:append>
+        <div>
+          <v-switch
+            :label="`Auto scroll ${autoScroll ? 'On' : 'Off'}`"
+            color="indigo"
+            v-model="autoScroll"
+          >
+            <v-tooltip activator="parent" location="bottom">on / off</v-tooltip>
+          </v-switch>
+        </div>
         <!-- <span>auto-scroll ({{ autoScroll ? "On" : "Off" }})</span>
       </v-tooltip> -->
-      <!-- <v-tooltip location="bottom"> -->
-        <v-chip slot="activator" color="indigo white--text">
-          {{ localSizeStr }}
-          <v-btn
-            icon
-            size="small"
-            location="left"
-            class="ml-0"
-            @click="text = ''"
-          >
-            <v-icon>delete</v-icon>
-          </v-btn>
-        </v-chip>
-        <!-- <span>Web console log size</span>
+        <!-- <v-tooltip location="bottom"> -->
+        <v-chip-group>
+          <v-chip color="indigo white--text" @click="text = ''">
+            {{ formatBytes(localSize) }}
+            <v-icon icon="mdi-delete"></v-icon>
+          </v-chip>
+          <!-- <span>Web console log size</span>
       </v-tooltip> -->
-      <!-- <v-tooltip location="bottom"> -->
-        <v-chip slot="activator" class="bg-indigo text-white">
-          {{ sizeStr }}
-        </v-chip>
+          <!-- <v-tooltip location="bottom"> -->
+          <v-chip class="bg-indigo text-white">
+            {{ formatBytes(remoteSize) }}
+          </v-chip>
+        </v-chip-group>
         <!-- <span>Remote log size</span>
       </v-tooltip> -->
-      <v-btn icon size="small" @click="maximize = !maximize" class="mr-2">
-        <v-icon v-if="maximize">mdi-expand-more</v-icon>
-        <v-icon v-else>mdi-expand-less</v-icon>
-      </v-btn>
+        <v-btn
+          icon
+          remoteSize="small"
+          @click="maximize = !maximize"
+          class="mr-2"
+        >
+          <v-icon v-if="maximize">mdi-chevron-down</v-icon>
+          <v-icon v-else>mdi-chevron-up</v-icon>
+        </v-btn>
+      </template>
     </v-toolbar>
     <v-progress-linear
       :indeterminate="active"
@@ -55,10 +57,10 @@
     <v-card>
       <v-card-text
         :style="windowSize"
-        id="logContent"
+        ref="log-content"
         class="overflow-y-auto bg-black text-white px-2 py-0"
       >
-        <pre class="logConsole">
+        <pre class="log-console">
           {{ text }}
         </pre>
       </v-card-text>
@@ -67,7 +69,8 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, useTemplateRef, onMounted } from "vue";
+
 import { storeToRefs } from "pinia";
 import { formatBytes } from "@/multivisor";
 
@@ -75,18 +78,24 @@ import { useAppStore } from "@/stores/app";
 
 const store = useAppStore();
 
-const text = "";
-let size = 0;
-const maximize = false;
-const autoScroll = true;
-const eventSource = null;
+const text = ref("");
+const remoteSize = ref(0);
+const maximize = ref(false);
+const autoScroll = ref(true);
+const eventSource = ref(null);
 
 const { log } = storeToRefs(store);
 
+const logContent = useTemplateRef("log-content");
+
 const visible = computed({
-  get() { return log.value.visible },
-  set(newValue) { store.setLogVisible(newValue) }
-})
+  get() {
+    return log.value.visible;
+  },
+  set(newValue) {
+    store.setLogVisible(newValue);
+  },
+});
 
 const title = computed(() => {
   if (!visible.value) {
@@ -98,15 +107,11 @@ const title = computed(() => {
 
 const windowSize = computed(() => {
   let h = window.innerHeight;
-  return `height: ${maximize ? h - 80 : Math.min(h / 3, 300)}px;`;
+  return `height: ${maximize.value ? h - 80 : Math.min(h / 3, 300)}px;`;
 });
 
-const sizeStr = computed(() => {
-  return formatBytes(size);
-});
-
-const localSizeStr = computed(() => {
-  return formatBytes(text.length);
+const localSize = computed(() => {
+  return text.value.length;
 });
 
 const active = computed(() => {
@@ -114,29 +119,28 @@ const active = computed(() => {
 });
 
 const appendLogMessage = (data) => {
-  size = data.size;
+  remoteSize.value = data.size;
   if (data.message) {
-    text += data.message;
+    text.value += data.message;
     /* At 10Mb, cut log to 9Mb */
     if (text.length > 1e7) {
-      text = text.substr(-9000000);
+      text.value = text.value.substr(-9000000);
     }
   }
   if (autoScroll) {
-    let logTag = document.getElementById("logContent");
     setTimeout(() => {
-      logTag.scrollTop = logTag.scrollHeight;
+      logContent.value.scrollTop = logContent.value.scrollHeight;
     }, 100);
   }
 };
 
 const viewLog = () => {
-  if (eventSource !== null) {
-    text = "";
-    size = 0;
-    eventSource.close();
+  if (eventSource.value !== null) {
+    text.value = "";
+    remoteSize.value = 0;
+    eventSource.value.close();
   }
-  if (!visible) {
+  if (!visible.value) {
     return;
   }
   let newEventSource = new EventSource(
@@ -147,23 +151,32 @@ const viewLog = () => {
     appendLogMessage(data);
   };
   newEventSource.onopen = (event) => {
-    console.debug(log.value.stream + " stream opened for " + log.value.process.uid);
+    console.debug(
+      log.value.stream + " stream opened for " + log.value.process.uid,
+    );
   };
   newEventSource.onclose = (event) => {
-    eventSource = null;
+    eventSource.value = null;
   };
   newEventSource.onerror = (event) => {
-    eventSource.close();
-    eventSource = null;
+    eventSource.value.close();
+    eventSource.value = null;
   };
-  eventSource = newEventSource;
+  eventSource.value = newEventSource;
 };
 
-watch(visible, () => { console.log("view log"); viewLog() })
+onMounted(() => {
+  watch(visible, () => {
+    viewLog();
+  });
+});
 </script>
 
 <style scoped>
-.logConsole {
+.log-console {
   font-size: small;
+}
+.log-toolbar-title {
+  font-size: medium;
 }
 </style>
