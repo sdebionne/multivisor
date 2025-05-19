@@ -70,7 +70,6 @@
 
 <script setup>
 import { computed, useTemplateRef, onMounted } from "vue";
-
 import { storeToRefs } from "pinia";
 import { formatBytes } from "@/multivisor";
 
@@ -85,8 +84,7 @@ const autoScroll = ref(true);
 const eventSource = ref(null);
 
 const { log } = storeToRefs(store);
-
-const logContent = useTemplateRef("log-content");
+const logContent = useTemplateRef('log-content')
 
 const visible = computed({
   get() {

@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar :elevation="2" fixed>
+  <v-app-bar :elevation="2"  class="primary" fixed>
     <!-- <template v-slot:prepend>
       <v-menu offset="15" v-show="isAuthenticated && useAuthentication">
         <template slot="activator">

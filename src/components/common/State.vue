@@ -1,6 +1,5 @@
 <template lang="html">
   <v-chip
-    disabled
     label
     :color="stateColorMap[state]"
     text-color="white"
@@ -10,17 +9,13 @@
   </v-chip>
 </template>
 
-<script>
+<script setup>
 import { stateColorMap } from "@/multivisor";
 
-export default {
-  name: "ProcessState",
-  props: {
-    state: { default: "UNKNOWN" },
-    small: { default: false },
-  },
-  data() {
-    return { stateColorMap };
-  },
-};
+//const props = defineProps(['state', 'small'])
+
+const { state, small } =  defineProps({
+  state: { default: "UNKNOWN" },
+  small: { default: false },
+})
 </script>
