@@ -12,6 +12,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Test files
+supervisord.log*
+supervisord.pid*
+tests/log
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

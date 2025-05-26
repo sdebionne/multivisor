@@ -84,7 +84,7 @@ const autoScroll = ref(true);
 const eventSource = ref(null);
 
 const { log } = storeToRefs(store);
-const logContent = useTemplateRef('log-content')
+let logContent = ref(null);
 
 const visible = computed({
   get() {
@@ -126,8 +126,15 @@ const appendLogMessage = (data) => {
     }
   }
   if (autoScroll) {
-    setTimeout(() => {
-      logContent.value.scrollTop = logContent.value.scrollHeight;
+    nextTick(() => {
+      if (logContent.value) {
+        console.log(logContent.value);
+        console.log(logContent.value.scrollTop);
+        console.log(logContent.value.scrollHeight);
+        logContent.value.scrollTop = logContent.value.scrollHeight;
+      } else {
+        // not mounted yet, or the element was unmounted (e.g. by v-if)
+      }
     }, 100);
   }
 };
@@ -164,6 +171,8 @@ const viewLog = () => {
 };
 
 onMounted(() => {
+  logContent = useTemplateRef("log-content");
+
   watch(visible, () => {
     viewLog();
   });
