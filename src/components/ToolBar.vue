@@ -36,7 +36,7 @@
     </v-text-field>
     <!-- <ActionBar v-show="isAuthenticated || !useAuthentication"></ActionBar> -->
     <!-- <v-toolbar-items v-show="isAuthenticated || !useAuthentication"> -->
-    <v-btn icon="mdi-dots-vertical"></v-btn>
+    <!-- <v-btn icon="mdi-dots-vertical"></v-btn> -->
     <ProcessChip class="hidden-sm-and-down"></ProcessChip>
     <SupervisorChip class="hidden-sm-and-down"></SupervisorChip>
     <GroupChip class="hidden-sm-and-down"></GroupChip>

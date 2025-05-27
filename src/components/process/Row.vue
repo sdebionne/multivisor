@@ -1,6 +1,6 @@
 <template>
   <tr>
-    <td class="px-0" style="height: 30px">
+    <!-- <td class="px-0" style="height: 30px">
       <v-checkbox
         primary
         hide-details
@@ -8,7 +8,7 @@
         :value="process.uid"
       >
       </v-checkbox>
-    </td>
+    </td> -->
     <td class="px-0" style="height: 30px">
       {{ process.name }}
     </td>
@@ -20,7 +20,6 @@
     </td>
     <td class="px-0" style="height: 30px">
       <v-chip
-        disabled
         label
         :color="stateColorMap[process.statename]"
         size="small"
@@ -31,7 +30,7 @@
 
     <td class="layout px-0" style="height: 30px">
       <v-btn
-        icon
+        icon flat
         size="small"
         @click="restartProcess(process)"
         class="mx-0 my-1"
@@ -42,7 +41,7 @@
         </v-icon>
       </v-btn>
       <v-btn
-        icon
+        icon flat
         size="small"
         @click="stopProcess(process)"
         :disabled="!process.running"
@@ -52,7 +51,7 @@
       </v-btn>
       <v-menu open-on-hover>
         <template v-slot:activator="{ props }">
-          <v-btn icon="mdi-dots-vertical" v-bind="props"></v-btn>
+          <v-btn icon="mdi-dots-vertical" flat v-bind="props"></v-btn>
         </template>
         <v-list>
           <v-list-item @click="viewDetails(process)">

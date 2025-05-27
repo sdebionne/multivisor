@@ -18,7 +18,7 @@
           <template v-else>mdi-play</template>
         </v-icon>
       </v-btn>
-      <v-btn flat  icon @click="stopProcess(process)" :disabled="!process.running">
+      <v-btn flat icon @click="stopProcess(process)" :disabled="!process.running">
         <v-icon color="red">mdi-stop</v-icon>
       </v-btn>
       <v-menu open-on-hover>

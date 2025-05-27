@@ -14,19 +14,80 @@
       item-key="uid"
       class="elevation-4"
     >
-      <template v-slot:item="{ item }">
-        <ProcessRow
+      <template v-slot:item.statename="{ item }">
+        <!-- <ProcessRow
           :process="item"
           :show-supervisor="showSupervisor"
           :show-group="showGroup"
-        ></ProcessRow>
+        ></ProcessRow> -->
+
+        <v-chip
+          label
+          variant="flat"
+          :color="stateColorMap[item.statename]"
+          :text="item.statename"
+          size="small"
+        >
+        </v-chip>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-btn
+          icon flat
+          size="small"
+          @click="restartProcess(item)"
+          class="mx-0 my-1"
+        >
+          <v-icon color="green">
+            <template v-if="item.running">mdi-autorenew</template>
+            <template v-else>mdi-play</template>
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon flat
+          size="small"
+          @click="stopProcess(item)"
+          :disabled="!item.running"
+          class="mx-0 my-1"
+        >
+          <v-icon color="red">mdi-stop</v-icon>
+        </v-btn>
+        <v-menu open-on-hover>
+          <template v-slot:activator="{ props }">
+            <v-btn icon="mdi-dots-vertical" flat v-bind="props"></v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="viewDetails(item)">
+              <v-list-item-title
+                ><v-icon size="small">mdi-information</v-icon>
+                Info</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item @click="viewLog(item, 'out')" v-if="item.logfile">
+              <v-list-item-title
+                ><v-icon size="small">mdi-file-document-alert-outline</v-icon>Log
+                stdout</v-list-item-title
+              >
+            </v-list-item>
+            <v-list-item
+              @click="viewLog(item, 'err')"
+              v-if="item.stderr_logfile"
+            >
+              <v-list-item-title
+                ><v-icon size="small">mdi-file-document-alert-outline</v-icon>Log
+                stderr</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
     </v-data-table>
   </v-container>
 </template>
 
 <script setup>
-import ProcessRow from "@/components/process/Row";
+//import ProcessRow from "@/components/process/Row";
+import { stateColorMap } from "@/multivisor";
+
 import { useAppStore } from "@/stores/app";
 
 const store = useAppStore();
@@ -78,7 +139,7 @@ const headers = computed(() => {
     align: "left",
     sortable: false,
     title: "Actions",
-    value: "",
+    value: "actions",
     tooltip: "(re)start/stop/view log",
   });
   return header;
@@ -100,4 +161,24 @@ const selectedProcesses = computed({
 const procs = computed(() => {
   return processes || store.processes;
 });
+
+const restartProcess = (process) => {
+  store.restartProcesses([process.uid]);
+};
+const stopProcess = (process) => {
+  store.stopProcesses([process.uid]);
+};
+const viewLog = (process, stream) => {
+  store.setLog({
+    process,
+    stream,
+    visible: true,
+  });
+};
+const viewDetails = (process) => {
+  store.setProcessDetails({
+    process,
+    visible: true,
+  });
+};
 </script>
