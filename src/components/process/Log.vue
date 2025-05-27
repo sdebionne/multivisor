@@ -84,7 +84,7 @@ const autoScroll = ref(true);
 const eventSource = ref(null);
 
 const { log } = storeToRefs(store);
-let logContent = ref(null);
+const logContent = useTemplateRef("log-content");
 
 const visible = computed({
   get() {
@@ -124,20 +124,18 @@ const appendLogMessage = (data) => {
     if (text.length > 1e7) {
       text.value = text.value.substr(-9000000);
     }
-  }
-  if (autoScroll) {
-    nextTick(() => {
-      if (logContent.value) {
-        console.log(logContent.value);
-        console.log(logContent.value.scrollTop);
-        console.log(logContent.value.scrollHeight);
-        logContent.value.scrollTop = logContent.value.scrollHeight;
-      } else {
-        // not mounted yet, or the element was unmounted (e.g. by v-if)
-      }
-    }, 100);
-  }
+  } 
 };
+
+const scrollToBottom = () => {
+  if (logContent.value) {    
+    nextTick(() => {
+      logContent.value.$el.scrollTop = logContent.value.$el.scrollHeight;
+    })
+  } else {
+    // not mounted yet, or the element was unmounted (e.g. by v-if)
+  }
+}
 
 const viewLog = () => {
   if (eventSource.value !== null) {
@@ -148,12 +146,16 @@ const viewLog = () => {
   if (!visible.value) {
     return;
   }
+
   let newEventSource = new EventSource(
     `/api/process/log/${log.value.stream}/tail/${log.value.process.uid}`,
   );
   newEventSource.onmessage = (event) => {
     let data = JSON.parse(event.data);
     appendLogMessage(data);
+    if (autoScroll.value) {
+      scrollToBottom()
+    }
   };
   newEventSource.onopen = (event) => {
     console.debug(
@@ -171,8 +173,6 @@ const viewLog = () => {
 };
 
 onMounted(() => {
-  logContent = useTemplateRef("log-content");
-
   watch(visible, () => {
     viewLog();
   });
