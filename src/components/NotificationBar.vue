@@ -28,7 +28,6 @@ const lastNotification = computed(() => {
 
 onMounted(() => {
   watch(lastNotification, (notification) => {
-    console.log(notification);
     visible.value = true;
     color.value = notificationColorMap[notification.level];
   });

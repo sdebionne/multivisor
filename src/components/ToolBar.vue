@@ -21,19 +21,23 @@
       {{ name }}
     </v-app-bar-title>
 
+    <v-text-field
+      prepend-inner-icon="mdi-magnify"
+      density="compact"
+      clearable
+      single-line
+      hide-details
+      placeholder="Filter"
+      v-model="search"
+      class="expending-search"
+      :class="{ closed: searchClosed && !search }"
+      v-show="isAuthenticated || !useAuthentication"
+      @focus="searchClosed = false"
+      @blur="searchClosed = true"
+    >
+    </v-text-field>
+
     <template v-slot:append>
-      <v-text-field
-        append-inner-icon="mdi-magnify"
-        clearable
-        single-line
-        hide-details
-        placeholder="Filter..."
-        v-model="search"
-        class="search-padding"
-        color="grey-lighten-1"
-        v-show="isAuthenticated || !useAuthentication"
-      >
-      </v-text-field>
       <!-- <ActionBar v-show="isAuthenticated || !useAuthentication"></ActionBar> -->
       <!-- <v-toolbar-items v-show="isAuthenticated || !useAuthentication"> -->
       <!-- <v-btn icon="mdi-dots-vertical"></v-btn> -->
@@ -64,6 +68,8 @@ const { name, search, isAuthenticated, useAuthentication } = storeToRefs(store);
 
 const drawer = defineModel("drawer", false);
 
+const searchClosed = ref(true);
+
 function logout() {
   dispatch("logout").then(() => {
     this.$router.push({ name: "Login" });
@@ -71,13 +77,17 @@ function logout() {
 }
 </script>
 
-<style scoped>
-.search-padding input {
-  padding: 0;
-}
+<style scoped lang="sass">
+.v-input.expending-search
+  transition: max-width 0.3s
+  .v-field__prepend-inner
+    cursor: pointer !important
+  &.closed
+    max-width: 45px
+    .v-field__overlay
+      background-color: transparent !important
 
-.buttons-padding {
-  padding-left: 1em;
-  padding-right: 1em;
-}
+.buttons-padding
+  padding-left: 1em
+  padding-right: 1em
 </style>
