@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-toolbar dense color="purple-darken-2" dark>
+    <v-toolbar density="compact" color="purple-darken-2" dark>
       <v-toolbar-title>{{ group.name }}</v-toolbar-title>
 
       <v-btn

@@ -1,6 +1,9 @@
 <template>
   <v-main>
-    <router-view />
+    <v-container fluid grid-list-md>
+      <AlertBar></AlertBar>
+      <router-view></router-view>
+    </v-container>
   </v-main>
 </template>
 

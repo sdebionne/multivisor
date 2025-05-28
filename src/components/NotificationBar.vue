@@ -1,11 +1,10 @@
 <template>
   <v-snackbar
     :timeout="5000"
-    location="bottom right"
     :color="color"
     v-model="visible"
+    :text="lastNotification.message"
   >
-    {{ lastNotification.message }}
   </v-snackbar>
 </template>
 
@@ -16,16 +15,22 @@ import { notificationColorMap } from "@/multivisor";
 
 const store = useAppStore();
 
+const { notifications } = storeToRefs(store);
+
 let visible = ref(false);
 let color = ref("info");
 
 const lastNotification = computed(() => {
-  let n = store.notifications.length;
-  return n ? store.notifications[n - 1] : { message: "" };
+  const n = notifications.value.length;
+  const res = n ? notifications.value[n - 1] : { message: "" };
+  return res;
 });
 
-watch(lastNotification, (notification) => {
-  visible = true;
-  color = notificationColorMap[notification.level];
+onMounted(() => {
+  watch(lastNotification, (notification) => {
+    console.log(notification);
+    visible.value = true;
+    color.value = notificationColorMap[notification.level];
+  });
 });
 </script>

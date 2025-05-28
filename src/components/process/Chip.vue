@@ -1,7 +1,7 @@
 <template>
   <v-btn variant="flat" router to="/process">
     <v-tooltip activator="parent" location="bottom">Processes</v-tooltip>
-    <v-icon class="mr-2">mdi-cog-outline</v-icon>
+    <v-icon class="mr-2">mdi-cog</v-icon>
     <div>
       <v-icon size="small">mdi-thumb-up</v-icon>
       {{ nbRunningProcesses }}

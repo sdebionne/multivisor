@@ -1,12 +1,15 @@
 <template>
   <v-app>
-    <ToolBar></ToolBar>
-    <v-main>
-      <v-container fluid grid-list-md>
-        <AlertBar></AlertBar>
-        <router-view></router-view>
-      </v-container>
-    </v-main>
+    <ToolBar v-model:drawer="drawer"></ToolBar>
+    <v-navigation-drawer
+      v-model="drawer"
+      :location="$vuetify.display.mobile ? 'bottom' : undefined"
+      temporary
+    >
+      <v-list :items="drawerItems"></v-list>
+    </v-navigation-drawer>
+    <AlertBar></AlertBar>
+    <router-view></router-view>
     <NotificationBar></NotificationBar>
     <LogSheet></LogSheet>
     <ProcessDetails></ProcessDetails>
@@ -26,6 +29,23 @@ import ProcessDetails from "@/components/process/Details";
 import { useAppStore } from "@/stores/app";
 
 const store = useAppStore();
+
+const drawerItems = [
+  {
+    title: "Processes",
+    value: "process",
+  },
+  {
+    title: "Supervisors",
+    value: "Supervisor",
+  },
+  {
+    title: "Groups",
+    value: "group",
+  },
+];
+
+const drawer = ref(false);
 
 onMounted(() => {
   store.init();

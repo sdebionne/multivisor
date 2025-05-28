@@ -1,13 +1,8 @@
 <template>
   <transition name="scale-transition">
-    <v-alert
-      v-model="visible"
-      border="start"
-      variant="tonal"
-      type="warning"
-      closable
-      >{{ error }}</v-alert
-    >
+    <v-alert v-model="visible" variant="tonal" type="warning" closable>{{
+      error
+    }}</v-alert>
   </transition>
 </template>
 

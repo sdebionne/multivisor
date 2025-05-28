@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar :elevation="2"  class="primary" fixed>
+  <v-app-bar blue :elevation="2" class="bg-primary">
     <!-- <template v-slot:prepend>
       <v-menu offset="15" v-show="isAuthenticated && useAuthentication">
         <template slot="activator">
@@ -15,33 +15,35 @@
       </v-menu>
     </template> -->
 
-    <v-app-bar-nav-icon> </v-app-bar-nav-icon>
+    <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
     <v-app-bar-title style="cursor: pointer" @click="$router.push('/')">
       {{ name }}
     </v-app-bar-title>
 
-    <!-- <template v-slot:append> -->
-    <v-text-field
-      append-inner-icon="mdi-magnify"
-      clearable
-      single-line
-      hide-details
-      placeholder="Filter..."
-      v-model="search"
-      class="no-padding"
-      color="grey-lighten-1"
-      v-show="isAuthenticated || !useAuthentication"
-    >
-    </v-text-field>
-    <!-- <ActionBar v-show="isAuthenticated || !useAuthentication"></ActionBar> -->
-    <!-- <v-toolbar-items v-show="isAuthenticated || !useAuthentication"> -->
-    <!-- <v-btn icon="mdi-dots-vertical"></v-btn> -->
-    <ProcessChip class="hidden-sm-and-down"></ProcessChip>
-    <SupervisorChip class="hidden-sm-and-down"></SupervisorChip>
-    <GroupChip class="hidden-sm-and-down"></GroupChip>
-    <!-- </v-toolbar-items> -->
-    <!-- </template> -->
+    <template v-slot:append>
+      <v-text-field
+        append-inner-icon="mdi-magnify"
+        clearable
+        single-line
+        hide-details
+        placeholder="Filter..."
+        v-model="search"
+        class="search-padding"
+        color="grey-lighten-1"
+        v-show="isAuthenticated || !useAuthentication"
+      >
+      </v-text-field>
+      <!-- <ActionBar v-show="isAuthenticated || !useAuthentication"></ActionBar> -->
+      <!-- <v-toolbar-items v-show="isAuthenticated || !useAuthentication"> -->
+      <!-- <v-btn icon="mdi-dots-vertical"></v-btn> -->
+      <v-btn-group variant="outlined" divided class="buttons-padding">
+        <ProcessChip class="hidden-sm-and-down"></ProcessChip>
+        <SupervisorChip class="hidden-sm-and-down"></SupervisorChip>
+        <GroupChip class="hidden-sm-and-down"></GroupChip>
+      </v-btn-group>
+      <!-- </v-toolbar-items> -->
+    </template>
   </v-app-bar>
 </template>
 
@@ -60,6 +62,8 @@ const store = useAppStore();
 
 const { name, search, isAuthenticated, useAuthentication } = storeToRefs(store);
 
+const drawer = defineModel("drawer", false);
+
 function logout() {
   dispatch("logout").then(() => {
     this.$router.push({ name: "Login" });
@@ -68,7 +72,12 @@ function logout() {
 </script>
 
 <style scoped>
-.no-padding {
+.search-padding input {
   padding: 0;
+}
+
+.buttons-padding {
+  padding-left: 1em;
+  padding-right: 1em;
 }
 </style>

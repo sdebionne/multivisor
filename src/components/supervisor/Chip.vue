@@ -1,7 +1,7 @@
 <template>
   <v-btn slot="activator" variant="flat" router to="/supervisor">
     <v-tooltip activator="parent" location="bottom">Supervisors</v-tooltip>
-    <v-icon class="mr-2">mdi-blender</v-icon>
+    <v-icon class="mr-2">mdi-desktop-classic</v-icon>
     <div>
       <v-icon size="small">mdi-thumb-up</v-icon>
       {{ nbRunningSupervisors }}
