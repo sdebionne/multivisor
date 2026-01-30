@@ -5,6 +5,12 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools_scm]
 version_scheme = "guess-next-dev"
 
+[tool.setuptools.packages.find]
+include = ["multivisor", "multivisor.*"]
+
+[tool.setuptools.package-data]
+"multivisor.server" = ["dist/*", "dist/static/css/*", "dist/static/js/*", "dist/static/fonts/*"]
+
 [project]
 name = "multivisor"
 dynamic = ["version"]
@@ -53,6 +59,7 @@ rpc = [
 ]
 web = [
     "flask",
+    "flask_cors",
     "werkzeug",
     "blinker",
     "zerorpc",
