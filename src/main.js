@@ -1,22 +1,20 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
+/**
+ * main.js
+ *
+ * Bootstraps Vuetify and other plugins then mounts the App`
+ */
 
-import App from '@/App'
-import store from '@/store'
-import router from '@/router'
+// Plugins
+import { registerPlugins } from "@/plugins";
 
-Vue.use(Vuetify)
+// Components
+import App from "./App.vue";
 
-Vue.config.productionTip = false
+// Composables
+import { createApp } from "vue";
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  store,
-  router,
-  render: h => h(App),
-  created () {
-    this.$store.dispatch('init')
-  }
-})
+const app = createApp(App);
+
+registerPlugins(app);
+
+app.mount("#app");
