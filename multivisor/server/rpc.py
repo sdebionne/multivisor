@@ -11,8 +11,9 @@ from gevent import spawn
 from gevent.lock import RLock
 from gevent.queue import Queue
 from gevent.fileobject import FileObject
-from zerorpc import stream, Server, LostRemote
 from supervisor.childutils import getRPCInterface
+
+from ..zerorpc import stream, Server, LostRemote
 
 
 READY = "READY\n"
